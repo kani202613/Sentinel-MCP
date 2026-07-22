@@ -48,6 +48,16 @@ def analyze_endpoint(request: AnalysisRequest, username: str = Depends(verify_to
         components=RiskComponents(CD=0.7, PV=0.6, TR=0.8, ST=0.6, ML=0.5)
     )
 
+@app.get("/")
+def root():
+    return {
+        "status": "online",
+        "system": "SentinelMCP Security API",
+        "version": "4.0.0",
+        "documentation": "/docs",
+        "health": "/health"
+    }
+
 @app.get("/health")
 def health_check():
     return {
