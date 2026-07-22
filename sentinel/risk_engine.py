@@ -18,6 +18,11 @@ class RiskEngine:
         self.ml_detector = MLDetector()
         self.weight_learner = WeightLearner()
         
+        if weights_path is None:
+            default_p = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'models', 'frozen_weights.json')
+            if os.path.exists(default_p):
+                weights_path = default_p
+        
         # Load weights and ML model if provided
         if weights_path and os.path.exists(weights_path):
             with open(weights_path, 'r') as f:
