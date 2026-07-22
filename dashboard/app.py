@@ -1,8 +1,14 @@
-import streamlit as st
-import json
+import sys
 import os
+import json
+import streamlit as st
 import pandas as pd
 import numpy as np
+
+# Add project root to sys.path for module resolution
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
 
 from sentinel.risk_engine import RiskEngine
 
