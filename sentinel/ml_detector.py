@@ -73,9 +73,6 @@ class MLDetector:
     def save_model(self, path: str) -> None:
         """
         Save the trained model to the specified path.
-        
-        Args:
-            path (str): The file path where the model will be saved.
         """
         os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
         joblib.dump(self.model, path)
@@ -83,9 +80,6 @@ class MLDetector:
     def load_model(self, path: str) -> None:
         """
         Load a trained model from the specified path.
-        
-        Args:
-            path (str): The file path from where the model will be loaded.
         """
         if os.path.exists(path):
             self.model = joblib.load(path)

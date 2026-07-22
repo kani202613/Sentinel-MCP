@@ -1,0 +1,29 @@
+LaTeX Table:
+```latex
+\begin{table}[htbp]
+\caption{Ablation Results}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Model} & \textbf{Set B F1 (95\% CI)} & \textbf{Evasion Recall} \\
+\hline
+Policy Only & 0.000 [0.000, 0.000] & 0.000 \\
+\hline
+XGBoost-raw & 0.667 [0.528, 0.775] & 1.000 \\
+\hline
+SRI-linear & 0.000 [0.000, 0.000] & 0.000 \\
+\hline
+ToolTrace Hybrid & 0.667 [0.528, 0.775] & 1.000 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+```
+
+Markdown Table:
+| Model | Set B F1 (95% CI) | Evasion Recall |
+|---|---|---|
+| Policy Only | 0.000 [0.000, 0.000] | 0.000 |
+| XGBoost-raw | 0.667 [0.528, 0.775] | 1.000 |
+| SRI-linear | 0.000 [0.000, 0.000] | 0.000 |
+| ToolTrace Hybrid | 0.667 [0.528, 0.775] | 1.000 |

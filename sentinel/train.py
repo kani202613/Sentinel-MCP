@@ -134,9 +134,8 @@ def main():
     os.makedirs(args.models_dir, exist_ok=True)
     
     xgb_path = os.path.join(args.models_dir, 'xgboost_detector.json')
-    if ml_detector.model is not None:
-        ml_detector.model.save_model(xgb_path)
-        print(f"Saved MLDetector to {xgb_path}")
+    ml_detector.save_model(xgb_path)
+    print(f"Saved MLDetector to {xgb_path}")
         
     weights_path = os.path.join(args.models_dir, 'frozen_weights.json')
     with open(weights_path, 'w') as f:

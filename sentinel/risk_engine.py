@@ -18,13 +18,25 @@ class RiskEngine:
         self.ml_detector = MLDetector()
         self.weight_learner = WeightLearner()
         
-        # Load weights if provided
+        # Load weights and ML model if provided
         if weights_path and os.path.exists(weights_path):
             with open(weights_path, 'r') as f:
                 weights_data = json.load(f)
-                self.weight_learner.weights = np.array(weights_data.get('weights', self.weight_learner.weights))
+                if isinstance(weights_data.get('weights'), dict):
+                    self.weight_learner.weights = weights_data['weights']
+                elif isinstance(weights_data.get('weights'), list):
+                    w_dict = self.weight_learner.weights
+                    for i, key in enumerate(w_dict.keys()):
+                        if i < len(weights_data['weights']):
+                            w_dict[key] = float(weights_data['weights'][i])
+                    self.weight_learner.weights = w_dict
+                
                 if 'intercept' in weights_data:
                     self.weight_learner.intercept = weights_data['intercept']
+            
+            xgb_path = os.path.join(os.path.dirname(os.path.abspath(weights_path)), 'xgboost_detector.json')
+            if os.path.exists(xgb_path):
+                self.ml_detector.load_model(xgb_path)
                 
     def get_decision(self, sri_score: float) -> str:
         if sri_score <= 20:
@@ -75,6 +87,8 @@ class RiskEngine:
                 
         # Calculate SRI
         weights = self.weight_learner.get_weights()
+        if isinstance(weights, dict):
+            weights = list(weights.values())
         w1, w2, w3, w4, w5 = weights
         
         # Calculate individual weighted contributions
