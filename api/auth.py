@@ -2,7 +2,11 @@ from datetime import datetime, timedelta
 from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+try:
+    from jose import JWTError, jwt
+except ImportError:
+    import jwt
+    JWTError = Exception
 
 SECRET_KEY = "sentinel-mcp-secret-key"
 ALGORITHM = "HS256"
