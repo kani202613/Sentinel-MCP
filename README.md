@@ -1,17 +1,23 @@
-# ToolTrace: Interpretable Runtime Behavioral Security and Policy Enforcement for MCP Agent Systems
+# SentinelMCP: Runtime Behavioral Security and Policy Enforcement Framework for MCP Agent Systems
 
-**"CrowdStrike for AI Agents"** - A runtime behavioral verification framework that continuously checks whether an MCP agent's execution remains aligned with the user's intent, using an empirically learned Sentinel Risk Index (SRI).
+> **"CrowdStrike for AI Agents"** — SentinelMCP is a runtime behavioral verification framework that continuously monitors whether an MCP agent's tool execution remains aligned with the user's intent using an empirically learned, decomposable **Sentinel Risk Index (SRI)**.
 
-## Architecture
+## Architecture Diagram
 
 ```mermaid
-graph TD
-    UserIntent[User Intent] --> MCP[MCP Agent System]
-    MCP -->|Action Logs / Tool Calls| TT[ToolTrace Monitor]
-    TT --> SRI{Sentinel Risk Index}
-    SRI -->|Low Risk| Allow[Allow Execution]
-    SRI -->|High Risk| Block[Policy Enforcement / Block]
-    TT -.-> DB[(Event Database)]
+flowchart TD
+    User([User]) --> Agent[AI Agent Gemini 2.5 Flash]
+    Agent --> MCP[MCP Tool Requests]
+    MCP -->|Action Logs / Tool Calls| SM[SentinelMCP Monitor]
+    SM --> Interceptor[Sentinel Interceptor]
+    Interceptor --> GraphBuilder[Behavior Graph Builder]
+    GraphBuilder --> Context[Context Validator]
+    Context --> Policy[Policy Validator]
+    Policy --> RiskEngine[Sentinel Risk Engine]
+    RiskEngine --> SRI[Sentinel Risk Index]
+    SRI --> Decision{Decision Engine}
+    Decision -->|SAFE / MONITOR| Tools[MCP Tools]
+    Decision -->|SUSPICIOUS / BLOCKED| Dashboard[SentinelMCP Dashboard]
 ```
 
 ## Setup Instructions

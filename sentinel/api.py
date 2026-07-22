@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import Dict, Any, List
 from sentinel.risk_engine import RiskEngine
 
-app = FastAPI(title="ToolTrace API")
+app = FastAPI(title="SentinelMCP API")
 risk_engine = RiskEngine()
 
 class TracePayload(BaseModel):

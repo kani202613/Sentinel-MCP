@@ -5,11 +5,11 @@ import pandas as pd
 import numpy as np
 
 # Page Config
-st.set_page_config(page_title="ToolTrace Security Dashboard", layout="wide", page_icon="🛡️")
+st.set_page_config(page_title="SentinelMCP Security Dashboard", layout="wide", page_icon="🛡️")
 
-# Header
-st.title("🛡️ ToolTrace Runtime Behavioral Security & SRI Engine Status")
-st.markdown("### Interactive CrowdStrike-Style Security Operations View")
+# App Header
+st.title("🛡️ SentinelMCP Runtime Behavioral Security & SRI Engine Status")
+st.markdown("> **CrowdStrike for AI Agents** — Continuous Runtime Verification & Policy Enforcement Layer")
 
 # Define paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

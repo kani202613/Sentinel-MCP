@@ -38,13 +38,13 @@
         "Model": "XGBoost-raw",
         "Datasets": {
             "Set A": {
-                "Precision": 0.86,
+                "Precision": 1.0,
                 "Recall": 1.0,
-                "F1": 0.9247311827956989,
+                "F1": 1.0,
                 "AUC": 1.0,
                 "F1_CI": [
-                    0.88268156424581,
-                    0.9583333333333334
+                    1.0,
+                    1.0
                 ]
             },
             "Set B": {
@@ -105,16 +105,16 @@
         }
     },
     {
-        "Model": "ToolTrace Hybrid",
+        "Model": "SentinelMCP Hybrid",
         "Datasets": {
             "Set A": {
-                "Precision": 0.86,
+                "Precision": 1.0,
                 "Recall": 1.0,
-                "F1": 0.9247311827956989,
+                "F1": 1.0,
                 "AUC": 1.0,
                 "F1_CI": [
-                    0.88268156424581,
-                    0.9583333333333334
+                    1.0,
+                    1.0
                 ]
             },
             "Set B": {

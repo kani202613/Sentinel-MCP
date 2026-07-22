@@ -66,7 +66,7 @@ def run_ablation():
 
     risk_engine = RiskEngine(weights_path=os.path.join(models_dir, 'frozen_weights.json'))
 
-    models = ["Policy Only", "XGBoost-raw", "SRI-linear", "ToolTrace Hybrid"]
+    models = ["Policy Only", "XGBoost-raw", "SRI-linear", "SentinelMCP Hybrid"]
     results = []
     
     table_dict = {
@@ -123,7 +123,7 @@ def run_ablation():
                         w1, w2, w3, w4 = 0.25, 0.25, 0.25, 0.25
                     score = float(w1*cd + w2*pv + w3*tr + w4*st)
                     
-                elif model == "ToolTrace Hybrid":
+                elif model == "SentinelMCP Hybrid":
                     res = risk_engine.evaluate_session(trace)
                     score = res['sri_score'] / 100.0
                     
