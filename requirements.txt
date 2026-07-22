@@ -1,0 +1,13 @@
+xgboost>=2.0.0
+scikit-learn>=1.4.0
+numpy>=1.26.0
+pandas>=2.2.0
+networkx>=3.2.0
+pyyaml>=6.0.1
+fastapi>=0.100.0
+uvicorn>=0.23.0
+pydantic>=2.0.0
+python-dotenv>=1.0.0
+sentence-transformers>=2.2.2  # For MiniLM CD feature
+requests>=2.31.0
+pytest>=8.0.0

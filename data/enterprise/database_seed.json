@@ -1,0 +1,8 @@
+[
+  {
+    "id": 1,
+    "table": "users",
+    "action": "insert",
+    "data": {"username": "admin", "role": "superuser"}
+  }
+]

@@ -1,0 +1,8 @@
+[
+  {
+    "from": "manager@enterprise.com",
+    "to": "employee@enterprise.com",
+    "subject": "Q3 Planning",
+    "body": "Please review the attached documents for Q3 planning."
+  }
+]
