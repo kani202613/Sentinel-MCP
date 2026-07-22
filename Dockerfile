@@ -12,5 +12,5 @@ COPY . .
 # Expose ports for FastAPI (8000) and Streamlit (8501)
 EXPOSE 8000 8501
 
-# Default command runs the FastAPI uvicorn server with dynamic PORT fallback
-CMD ["sh", "-c", "uvicorn api.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Default command runs the FastAPI uvicorn server
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

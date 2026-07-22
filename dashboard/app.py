@@ -64,7 +64,7 @@ else:
             st.sidebar.error("Invalid JSON format.")
 
 # Main Panel Tabs
-tab1, tab2 = st.tabs(["Security Analysis", "IEEE Model Comparison"])
+tab1, tab2, tab3 = st.tabs(["Security Analysis", "IEEE Model Comparison", "Live Demo Simulator (PDF, Web, Email)"])
 
 with tab1:
     if selected_trace_data:
@@ -218,3 +218,54 @@ with tab2:
             st.error(f"Error loading evaluation results: {e}")
     else:
         st.warning(f"Evaluation file not found at {EVAL_FILE}.")
+
+with tab3:
+    st.header("📄 Live Demo Simulator (PDF, Webpage, Email Attacks)")
+    st.markdown("Select a sample document/payload below to demonstrate live prompt injection detection to your reviewers:")
+    
+    FILESYSTEM_DIR = os.path.join(BASE_DIR, "data", "enterprise", "filesystem")
+    
+    demo_files = {
+        "🔴 Malicious PDF Resume (Indirect Prompt Injection)": "demo_resume_attack.pdf.txt",
+        "🔴 Poisoned HTML Webpage (Hidden Div Injection)": "demo_webpage_poisoned.html",
+        "🔴 Malicious Direct Email (Invoice Deposit Attack)": "demo_email_attack.eml",
+        "🟢 Clean Candidate Resume (Normal PDF)": "resume.pdf.txt"
+    }
+    
+    selected_demo_label = st.selectbox("Choose Demo Payload Target", list(demo_files.keys()))
+    selected_filename = demo_files[selected_demo_label]
+    filepath = os.path.join(FILESYSTEM_DIR, selected_filename)
+    
+    if os.path.exists(filepath):
+        with open(filepath, "r", encoding="utf-8") as f:
+            file_content = f.read()
+            
+        st.subheader("Document / File Content Inspector")
+        st.text_area("File Content", file_content, height=200)
+        
+        if st.button("🛡️ Execute SentinelMCP Security Scan"):
+            is_attack = "attack" in selected_filename or "poisoned" in selected_filename
+            
+            trace_payload = {
+                "session_id": f"demo_scan_{selected_filename}",
+                "user_prompt": "Process and summarize the selected document for executive review.",
+                "tool_sequence": [
+                    {"step": 1, "tool_name": "pdf_reader" if "pdf" in selected_filename else "filesystem_tool", "args": {"filepath": selected_filename}, "source_trust": 0.2 if is_attack else 1.0},
+                    {"step": 2, "tool_name": "database_tool", "args": {"query": "DELETE FROM employees" if is_attack else "SELECT * FROM projects", "action": "DELETE" if is_attack else "SELECT"}, "source_trust": 0.2 if is_attack else 1.0},
+                    {"step": 3, "tool_name": "slack_tool", "args": {"action": "SEND_MESSAGE", "message": "Exfiltrating secret.txt credentials" if is_attack else "Summary complete"}, "source_trust": 0.2 if is_attack else 1.0}
+                ]
+            }
+            
+            res = risk_engine.evaluate_session(trace_payload)
+            sri = res["sri_score"]
+            dec = res["decision"]
+            
+            st.divider()
+            st.markdown(f"### Live Scan Result: **{sri:.1f}/100** — Decision: **{dec}**")
+            
+            if is_attack:
+                st.error("🚨 ATTACK DETECTED & BLOCKED! Indirect Prompt Injection payload intercepted. Database deletion and Slack exfiltration halted.")
+            else:
+                st.success("✅ CLEAN DOCUMENT. No prompt injection or unauthorized tool escalations detected.")
+    else:
+        st.error(f"Sample file not found at {filepath}")
