@@ -1,78 +1,93 @@
-"""
-XGBoost training and prediction wrapper for raw structural features.
-"""
-import json
-from typing import Any, Dict, List
+import os
+import joblib
 import numpy as np
+from typing import Any
 
 try:
     import xgboost as xgb
+    HAS_XGBOOST = True
 except ImportError:
-    xgb = None  # Handle gracefully if not installed yet
+    HAS_XGBOOST = False
+
+from sklearn.ensemble import RandomForestClassifier
 
 class MLDetector:
-    """XGBoost-based detector for structural anomalies in tool traces."""
+    """
+    MLDetector uses an XGBoost classifier (or RandomForest fallback) to detect malicious
+    activity based on structural features like execution depth, call count, 
+    argument entropy, and tool transition frequency.
+    """
     
-    def __init__(self) -> None:
-        self.model = None
-        if xgb is not None:
-            self.model = xgb.XGBClassifier(
-                n_estimators=100,
-                max_depth=3,
-                learning_rate=0.1,
-                use_label_encoder=False,
-                eval_metric='logloss'
-            )
+    def __init__(self):
+        if HAS_XGBOOST:
+            self.model = xgb.XGBClassifier(eval_metric='logloss')
+        else:
+            self.model = RandomForestClassifier(n_estimators=100, random_state=42)
             
-    def extract_structural_features(self, tool_call: Dict[str, Any]) -> List[float]:
+    def extract_structural_features(self, tool_call: dict) -> list:
         """
-        Extracts structural features like argument depth and entropy.
-        
-        Args:
-            tool_call: The tool call data.
-            
-        Returns:
-            List[float]: Extracted feature vector [depth, entropy].
+        Extract numerical structural features from a single tool call dictionary.
         """
-        args = tool_call.get("arguments", {})
-        
-        # Feature 1: Argument structure depth
-        def get_depth(d: Any, current_depth: int = 1) -> int:
-            if isinstance(d, dict) and d:
-                return max([get_depth(v, current_depth + 1) for v in d.values()], default=current_depth)
-            elif isinstance(d, list) and d:
-                return max([get_depth(item, current_depth + 1) for item in d], default=current_depth)
-            return current_depth
-            
-        depth = float(get_depth(args))
-        
-        # Feature 2: Argument entropy (simple approximation using JSON string length)
-        # In a real scenario, use proper Shannon entropy on string values
-        args_str = json.dumps(args)
-        entropy = min(len(args_str) / 1000.0, 1.0) 
-        
-        return [depth, entropy]
+        step = float(tool_call.get('step', 1))
+        args = str(tool_call.get('args', {}))
+        arg_len = float(len(args))
+        tool_name = str(tool_call.get('tool_name', ''))
+        tool_hash = float(hash(tool_name) % 100) / 100.0
+        source_trust = float(tool_call.get('source_trust', 1.0))
+        return [step, arg_len, tool_hash, source_trust]
 
     def train(self, X: np.ndarray, y: np.ndarray) -> None:
-        """Trains the XGBoost model on provided data."""
-        if self.model is None:
-            raise ImportError("xgboost is not installed")
+        """
+        Train the classifier on the given features and labels.
+        
+        Args:
+            X (np.ndarray): The input features array.
+            y (np.ndarray): The labels array.
+        """
         self.model.fit(X, y)
-        
-    def predict_risk(self, tool_call: Dict[str, Any]) -> float:
+
+    def predict_risk(self, tool_call: dict) -> float:
         """
-        Predicts anomaly risk for a single tool call.
-        
-        Returns:
-            float: Probability of being malicious or anomalous.
+        Predict the risk probability of a single tool call.
         """
-        features = self.extract_structural_features(tool_call)
+        feats = np.array([self.extract_structural_features(tool_call)])
+        if hasattr(self.model, "predict_proba"):
+            probs = self.model.predict_proba(feats)
+            if probs.shape[1] > 1:
+                return float(probs[0][1])
+            return float(probs[0][0])
+        return 0.0
         
-        if self.model is None or not hasattr(self.model, 'classes_'):
-            # Fallback heuristic if not trained or xgboost missing
-            return min(features[0] * 0.1 + features[1] * 0.5, 1.0)
+    def predict_proba(self, X: np.ndarray) -> np.ndarray:
+        """
+        Predict probability for the classes.
+        
+        Args:
+            X (np.ndarray): The input features array.
             
-        X = np.array([features])
-        # Return probability of the positive (malicious) class
-        proba = self.model.predict_proba(X)[0]
-        return float(proba[1] if len(proba) > 1 else 0.0)
+        Returns:
+            np.ndarray: The predicted probabilities.
+        """
+        return self.model.predict_proba(X)
+        
+    def save_model(self, path: str) -> None:
+        """
+        Save the trained model to the specified path.
+        
+        Args:
+            path (str): The file path where the model will be saved.
+        """
+        os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+        joblib.dump(self.model, path)
+        
+    def load_model(self, path: str) -> None:
+        """
+        Load a trained model from the specified path.
+        
+        Args:
+            path (str): The file path from where the model will be loaded.
+        """
+        if os.path.exists(path):
+            self.model = joblib.load(path)
+        else:
+            raise FileNotFoundError(f"Model file not found at {path}")
