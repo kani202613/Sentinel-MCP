@@ -1,3 +1,4 @@
+streamlit>=1.30.0
 xgboost>=2.0.0
 python-jose[cryptography]>=3.3.0
 pyjwt>=2.8.0
