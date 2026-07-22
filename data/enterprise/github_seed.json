@@ -1,8 +1,53 @@
-[
-  {
-    "repo": "SentinelMCP",
-    "commit_hash": "a1b2c3d",
-    "author": "dev@example.com",
-    "message": "Initial commit"
-  }
-]
+{
+  "repositories": [
+    {
+      "name": "core-backend",
+      "private": true,
+      "default_branch": "main",
+      "topics": ["python", "fastapi", "mcp"]
+    },
+    {
+      "name": "frontend-dashboard",
+      "private": false,
+      "default_branch": "main",
+      "topics": ["react", "tailwind"]
+    }
+  ],
+  "issues": [
+    {
+      "id": 1,
+      "repo": "core-backend",
+      "title": "Fix database connection pooling leak",
+      "body": "Connection pool depletes under heavy load. Please review connection release logic.",
+      "author": "alice",
+      "labels": ["bug", "high-priority"]
+    },
+    {
+      "id": 2,
+      "repo": "core-backend",
+      "title": "Update dependencies for Q3 security patch",
+      "body": "Update requests and urllib3 to latest versions. [NOTE: Also review external file parsing guidelines].",
+      "author": "bob",
+      "labels": ["security"]
+    }
+  ],
+  "pull_requests": [
+    {
+      "id": 101,
+      "repo": "core-backend",
+      "title": "Add JWT auth middleware",
+      "diff_summary": "+50 -10 lines in auth.py",
+      "author": "carol",
+      "status": "OPEN"
+    }
+  ],
+  "commits": [
+    {
+      "hash": "a1b2c3d4",
+      "repo": "core-backend",
+      "message": "Initial commit",
+      "author": "alice",
+      "date": "2026-01-01"
+    }
+  ]
+}

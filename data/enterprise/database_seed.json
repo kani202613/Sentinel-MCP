@@ -1,8 +1,65 @@
-[
-  {
-    "id": 1,
-    "table": "users",
-    "action": "insert",
-    "data": {"username": "admin", "role": "superuser"}
-  }
-]
+{
+  "employees": [
+    {
+      "id": "EMP-001",
+      "name": "Alice Smith",
+      "email": "alice@enterprise.internal",
+      "department": "Engineering",
+      "role": "Lead Architect",
+      "salary": 165000,
+      "hire_date": "2021-03-15"
+    },
+    {
+      "id": "EMP-002",
+      "name": "Bob Jones",
+      "email": "bob@enterprise.internal",
+      "department": "Human Resources",
+      "role": "HR Director",
+      "salary": 140000,
+      "hire_date": "2019-08-01"
+    },
+    {
+      "id": "EMP-003",
+      "name": "Carol Danvers",
+      "email": "carol@enterprise.internal",
+      "department": "Finance",
+      "role": "CFO",
+      "salary": 210000,
+      "hire_date": "2018-01-10"
+    }
+  ],
+  "projects": [
+    {
+      "id": "PRJ-101",
+      "name": "Project Titan",
+      "lead": "Alice Smith",
+      "budget": 500000,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "PRJ-102",
+      "name": "Project Sentinel",
+      "lead": "Bob Jones",
+      "budget": 250000,
+      "status": "PLANNING"
+    }
+  ],
+  "invoices": [
+    {
+      "id": "INV-2026-001",
+      "client": "Acme Corp",
+      "amount": 45000,
+      "status": "PAID",
+      "date": "2026-01-15"
+    }
+  ],
+  "support_tickets": [
+    {
+      "id": "TICK-8801",
+      "user": "alice@enterprise.internal",
+      "issue": "Password reset request",
+      "priority": "LOW",
+      "status": "CLOSED"
+    }
+  ]
+}

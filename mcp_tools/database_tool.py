@@ -1,39 +1,115 @@
+import os
+import json
+import logging
 from typing import Dict, Any
 from .base import MCPTool
 
+logger = logging.getLogger(__name__)
+
 class DatabaseTool(MCPTool):
-    """Tool for simulating SQL query execution against HR/Financial databases."""
+    """Tool for interacting with a simulated database."""
     
+    def __init__(self):
+        self.db_path = r"c:\Users\kanis\OneDrive\Desktop\SentinelMCP\data\enterprise\database_seed.json"
+        
+    def _read_db(self) -> Dict[str, Any]:
+        if not os.path.exists(self.db_path):
+            return {}
+        with open(self.db_path, "r", encoding="utf-8") as f:
+            try:
+                return json.load(f)
+            except json.JSONDecodeError:
+                return {}
+                
+    def _write_db(self, data: Dict[str, Any]) -> None:
+        os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
+        with open(self.db_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+
     def execute(self, args: Dict[str, Any]) -> Dict[str, Any]:
-        query = args.get("query", "")
-        # Simulate returning dummy data based on keywords
-        results = []
-        if "employees" in query.lower() or "hr" in query.lower():
-            results = [{"id": 1, "name": "Alice", "department": "HR"}, {"id": 2, "name": "Bob", "department": "Engineering"}]
-        elif "finance" in query.lower() or "salary" in query.lower():
-            results = [{"id": 1, "salary": 120000}, {"id": 2, "salary": 95000}]
-        else:
-            results = [{"col1": "val1", "col2": "val2"}]
+        action = args.get("action", "").upper()
+        table_name = args.get("table_name")
+        query = args.get("query", {})
+        
+        if not action or action not in ["SELECT", "UPDATE", "DELETE", "INSERT"]:
+            return {"status": "error", "message": "Invalid or missing action."}
+        if not table_name:
+            return {"status": "error", "message": "table_name is required."}
             
-        return {
-            "status": "success",
-            "query_executed": query,
-            "row_count": len(results),
-            "results": results
-        }
+        db_data = self._read_db()
+        if table_name not in db_data and action != "INSERT":
+            return {"status": "error", "message": f"Table '{table_name}' does not exist."}
+            
+        try:
+            if action == "SELECT":
+                table = db_data.get(table_name, [])
+                # Simple filter based on query dict if provided
+                results = table
+                if query and isinstance(query, dict):
+                    results = [row for row in table if all(row.get(k) == v for k, v in query.items())]
+                return {"status": "success", "results": results}
+                
+            elif action == "INSERT":
+                if table_name not in db_data:
+                    db_data[table_name] = []
+                data_to_insert = args.get("data", {})
+                db_data[table_name].append(data_to_insert)
+                self._write_db(db_data)
+                return {"status": "success", "message": "Record inserted."}
+                
+            elif action == "UPDATE":
+                table = db_data.get(table_name, [])
+                update_data = args.get("data", {})
+                count = 0
+                for row in table:
+                    if not query or all(row.get(k) == v for k, v in query.items()):
+                        row.update(update_data)
+                        count += 1
+                self._write_db(db_data)
+                return {"status": "success", "message": f"Updated {count} records."}
+                
+            elif action == "DELETE":
+                table = db_data.get(table_name, [])
+                if not query:
+                    # DELETE ALL if no query
+                    db_data[table_name] = []
+                    count = len(table)
+                else:
+                    new_table = [row for row in table if not all(row.get(k) == v for k, v in query.items())]
+                    count = len(table) - len(new_table)
+                    db_data[table_name] = new_table
+                self._write_db(db_data)
+                return {"status": "success", "message": f"Deleted {count} records."}
+                
+        except Exception as e:
+            logger.error(f"Database error: {e}")
+            return {"status": "error", "message": str(e)}
 
     def get_schema(self) -> Dict[str, Any]:
         return {
-            "name": "database_query",
-            "description": "Execute SQL queries against HR/Financial databases.",
+            "name": "database_tool",
+            "description": "Interact with simulated JSON database.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "query": {
+                    "action": {
                         "type": "string",
-                        "description": "The SQL query string to execute."
+                        "enum": ["SELECT", "UPDATE", "DELETE", "INSERT"],
+                        "description": "Database operation to perform."
+                    },
+                    "table_name": {
+                        "type": "string",
+                        "description": "Table to operate on."
+                    },
+                    "query": {
+                        "type": "object",
+                        "description": "Key-value pairs for filtering (WHERE clause equivalent)."
+                    },
+                    "data": {
+                        "type": "object",
+                        "description": "Data payload for INSERT or UPDATE."
                     }
                 },
-                "required": ["query"]
+                "required": ["action", "table_name"]
             }
         }

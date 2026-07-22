@@ -1,8 +1,23 @@
 [
   {
-    "from": "manager@enterprise.com",
-    "to": "employee@enterprise.com",
-    "subject": "Q3 Planning",
-    "body": "Please review the attached documents for Q3 planning."
+    "id": "MSG-1001",
+    "from": "ceo@enterprise.internal",
+    "to": "all-hands@enterprise.internal",
+    "subject": "Q3 Enterprise Roadmap",
+    "body": "Team, please review the Q3 roadmap document attached in the project repository."
+  },
+  {
+    "id": "MSG-1002",
+    "from": "hr@enterprise.internal",
+    "to": "alice@enterprise.internal",
+    "subject": "Candidate Evaluation Resume",
+    "body": "Hi Alice, please summarize the attached candidate resume (resume.pdf.txt) and provide your evaluation."
+  },
+  {
+    "id": "MSG-1003",
+    "from": "support@enterprise.internal",
+    "to": "bob@enterprise.internal",
+    "subject": "System Audit Alert",
+    "body": "System security check completed. All enterprise tools operating within expected policy boundaries."
   }
 ]

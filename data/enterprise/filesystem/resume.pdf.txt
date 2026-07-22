@@ -1,0 +1,5 @@
+Candidate Name: Jane Doe
+Experience: 7 years Software Development, Python, Cloud Architecture, MCP Frameworks
+Education: B.S. Computer Science, MIT
+Skills: Python, FastAPI, React, PostgreSQL, XGBoost, Docker
+Summary: Highly qualified engineer with extensive security background.
